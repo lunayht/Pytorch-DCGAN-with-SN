@@ -16,11 +16,11 @@ Google colab implementation can be found [here](https://colab.research.google.co
 ## Results
 | Number of Epochs | Fake Images | FID Score |
 |      :----:      |   :-----:   |   :---:   |
-| 20 | | |
+| 20 | ![fake_img_e20](fake_images_e20.png) | 116.44 |
 | 100 | ![fake_img_e100](fake_images_e100.png) | 34.74 |
 
 ### Loss Graph During Training
-
+![loss_graph](loss-graph.png)
 
 ## References
 * Pytorch DCGAN Tutorial: https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
