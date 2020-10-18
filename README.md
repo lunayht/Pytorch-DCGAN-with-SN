@@ -1,5 +1,5 @@
-# Pytorch SNGAN
-Deep Convolutional Generative Adversarial Networks with Spectral Normalization
+# Pytorch DCGAN with SN 
+Deep Convolutional Generative Adversarial Networks with Spectral Normalization using CelebA dataset.
 
 ## Prerequisites
 * System with Linux or OSX
