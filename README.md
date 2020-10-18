@@ -9,7 +9,7 @@ Deep Convolutional Generative Adversarial Networks with Spectral Normalization u
 1. ```sh setup.sh```
 2. ```python main.py --num_epochs 5``` (Use ```-h``` for help)
 
-You may run the program using Pytorch SN-GAN with CelebA.ipynb as well. 
+You may run the program using DCGAN-with-SN.ipynb as well. 
 
 Google colab implementation can be found [here](https://colab.research.google.com/drive/1d7yGNYeU1w2tENWceWsU_pBkJbI2OTes?usp=sharing). 
 
