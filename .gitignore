@@ -1,4 +1,5 @@
 # Dataset
+*.zip
 celeba/
 
 # Byte-compiled / optimized / DLL files
