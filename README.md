@@ -1,7 +1,7 @@
 # Pytorch DCGAN with SN 
 Deep Convolutional Generative Adversarial Networks with Spectral Normalization using CelebA dataset.
 
-## Prerequisites
+## System Requirement
 * System with Linux or OSX
 * NVIDIA GPU is strongly recommended for speed however CPU is supported but training will be slow.
 
