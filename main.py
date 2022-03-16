@@ -20,18 +20,18 @@ from fid_score import calculate_fid_given_paths
 
 # Set random seed for reproducibility
 # manualSeed = 999
-manualSeed = random.randint(1, 10000) # use if you want new results
+manualSeed = random.randint(1, 10000)  # use if you want new results
 print("Random Seed: ", manualSeed)
 random.seed(manualSeed)
 torch.manual_seed(manualSeed)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', type=int, default=128)
-parser.add_argument('--image_size', type=int, default=64)
-parser.add_argument('--num_epochs', type=int, default=20)
-parser.add_argument('--lr', type=float, default=2e-4)
-parser.add_argument('--beta1', type=float, default=0.5)
-parser.add_argument('--nz', type=int, default=100)
+parser.add_argument("--batch_size", type=int, default=128)
+parser.add_argument("--image_size", type=int, default=64)
+parser.add_argument("--num_epochs", type=int, default=20)
+parser.add_argument("--lr", type=float, default=2e-4)
+parser.add_argument("--beta1", type=float, default=0.5)
+parser.add_argument("--nz", type=int, default=100)
 
 args = parser.parse_args()
 batch_size = args.batch_size
@@ -45,8 +45,8 @@ nz = args.nz
 DATAROOT = "celeba"
 WORKERS = 2
 NGPU = 1
-REAL_LABEL = 1.
-FAKE_LABEL = 0.
+REAL_LABEL = 1.0
+FAKE_LABEL = 0.0
 
 img_list = []
 G_losses = []
@@ -55,48 +55,56 @@ iters = 0
 ############################## FUNCTION ##############################
 def save_image_list(dataset, real):
     if real:
-        base_path = './img/real'
+        base_path = "./img/real"
     else:
-        base_path = './img/fake'
-    
+        base_path = "./img/fake"
+
     dataset_path = []
-    
+
     for i in range(len(dataset)):
-        save_path =  f'{base_path}/image_{i}.png'
+        save_path = f"{base_path}/image_{i}.png"
         dataset_path.append(save_path)
         vutils.save_image(dataset[i], save_path, normalize=True)
-    
+
     return base_path
 
+
 ############################## DATALOADER ##############################
-dataset = dset.ImageFolder(root=DATAROOT,
-                           transform=transforms.Compose([
-                               transforms.Resize(image_size),
-                               transforms.CenterCrop(image_size),
-                               transforms.ToTensor(),
-                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                           ]))
+dataset = dset.ImageFolder(
+    root=DATAROOT,
+    transform=transforms.Compose(
+        [
+            transforms.Resize(image_size),
+            transforms.CenterCrop(image_size),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ]
+    ),
+)
 # Create the dataloader
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
-                                         shuffle=True, num_workers=WORKERS)
+dataloader = torch.utils.data.DataLoader(
+    dataset, batch_size=batch_size, shuffle=True, num_workers=WORKERS
+)
 
 # Decide which device we want to run on
 device = torch.device("cuda:0" if (torch.cuda.is_available() and NGPU > 0) else "cpu")
 
 ############################## GENERATOR ##############################
 netG = Generator(NGPU).to(device)
-if (device.type == 'cuda') and (NGPU > 1):
+if (device.type == "cuda") and (NGPU > 1):
     netG = nn.DataParallel(netG, list(range(NGPU)))
 netG.apply(weights_init)
 
 ############################## DISCRIMINATOR ##########################
 netD = Discriminator(NGPU).to(device)
-if (device.type == 'cuda') and (NGPU > 1):
+if (device.type == "cuda") and (NGPU > 1):
     netD = nn.DataParallel(netD, list(range(NGPU)))
 
 #################### OPTIMIZER, NOISE, LOSS FUNC #######################
 optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
-optimizerD = optim.Adam(filter(lambda p: p.requires_grad, netD.parameters()), lr=lr, betas=(beta1,0.9))
+optimizerD = optim.Adam(
+    filter(lambda p: p.requires_grad, netD.parameters()), lr=lr, betas=(beta1, 0.9)
+)
 
 fixed_noise = torch.randn(64, nz, 1, 1, device=device)
 
@@ -108,10 +116,10 @@ criterion = nn.BCELoss()
 ############################## TRAINING ##############################
 print(f"Using device: {device}")
 print("Starting Training Loop...")
-for epoch in range(num_epochs+1):
+for epoch in range(num_epochs + 1):
     # For each batch in the dataloader
     for i, data in enumerate(dataloader, 0):
-        
+
         ############################
         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
         ###########################
@@ -161,38 +169,52 @@ for epoch in range(num_epochs+1):
         D_G_z2 = output.mean().item()
         # Update G
         optimizerG.step()
-        
+
         # Output training stats
         if i % 50 == 0:
-            print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
-                  % (epoch, num_epochs, i, len(dataloader),
-                     errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
-        
+            print(
+                "[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f"
+                % (
+                    epoch,
+                    num_epochs,
+                    i,
+                    len(dataloader),
+                    errD.item(),
+                    errG.item(),
+                    D_x,
+                    D_G_z1,
+                    D_G_z2,
+                )
+            )
+
         # Save Losses for plotting later
         G_losses.append(errG.item())
         D_losses.append(errD.item())
-        
+
         # Check how the generator is doing by saving G's output on fixed_noise
-        if (iters % 500 == 0) or ((epoch == num_epochs) and (i == len(dataloader)-1)):
+        if (iters % 500 == 0) or ((epoch == num_epochs) and (i == len(dataloader) - 1)):
             with torch.no_grad():
                 fake = netG(fixed_noise).detach().cpu()
             img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-            
+
         iters += 1
 
     scheduler_d.step()
     scheduler_g.step()
-    
-    # Check pointing for every epoch
-    torch.save(netG.state_dict(), './checkpoint/netG_epoch_%d.pth' % (epoch))
-    torch.save(netD.state_dict(), './checkpoint/netD_epoch_%d.pth' % (epoch))
 
-torch.save({
-            'generator' : netG.state_dict(),
-            'discriminator' : netD.state_dict(),
-            'optimizerG' : optimizerG.state_dict(),
-            'optimizerD' : optimizerD.state_dict()
-            }, './checkpoint/model_final.pth')
+    # Check pointing for every epoch
+    torch.save(netG.state_dict(), "./checkpoint/netG_epoch_%d.pth" % (epoch))
+    torch.save(netD.state_dict(), "./checkpoint/netD_epoch_%d.pth" % (epoch))
+
+torch.save(
+    {
+        "generator": netG.state_dict(),
+        "discriminator": netD.state_dict(),
+        "optimizerG": optimizerG.state_dict(),
+        "optimizerD": optimizerD.state_dict(),
+    },
+    "./checkpoint/model_final.pth",
+)
 
 print("Done Training!")
 
@@ -203,27 +225,31 @@ with torch.no_grad():
     fake_image_path_list = save_image_list(fake_dataset, False)
 
     # true images
-    test_dataset = dset.ImageFolder(root="./celeba",
-                            transform=transforms.Compose([
-                                transforms.Resize(image_size),
-                                transforms.CenterCrop(image_size),
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                            ]))
+    test_dataset = dset.ImageFolder(
+        root="./celeba",
+        transform=transforms.Compose(
+            [
+                transforms.Resize(image_size),
+                transforms.CenterCrop(image_size),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ]
+        ),
+    )
 
-    dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=50, shuffle=True, num_workers=2)
+    dataloader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=50, shuffle=True, num_workers=2
+    )
 
     for i, (data, _) in enumerate(dataloader):
         real_dataset = data
         break
-        
 
     real_image_path_list = save_image_list(real_dataset, True)
 
 ############################## EVALUATE ##############################
-fid_value = calculate_fid_given_paths([real_image_path_list, fake_image_path_list],
-                                                          50, 
-                                                          False,
-                                                          2048)
+fid_value = calculate_fid_given_paths(
+    [real_image_path_list, fake_image_path_list], 50, False, 2048
+)
 
-print (f"FID score: {fid_value}")
+print(f"FID score: {fid_value}")
