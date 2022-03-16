@@ -1,5 +1,5 @@
 # Pytorch DCGAN with SN 
-[![CodeFactor](https://www.codefactor.io/repository/github/lunayht/dbalwithimgdata/badge)](https://www.codefactor.io/repository/github/lunayht/dbalwithimgdata) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![CodeFactor](https://www.codefactor.io/repository/github/lunayht/pytorch-dcgan-with-sn/badge)](https://www.codefactor.io/repository/github/lunayht/pytorch-dcgan-with-sn) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Deep Convolutional Generative Adversarial Networks with Spectral Normalization using CelebA dataset.
 
