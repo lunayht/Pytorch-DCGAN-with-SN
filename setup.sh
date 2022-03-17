@@ -6,7 +6,7 @@ pip install -r requirements.txt --user
 mkdir -p checkpoint celeba img/fake img/real
 
 # Download and Extract Datasets
-if [! -f ./celeba.zip];
+if [! -f ./celeba.zip] ;
 then 
     wget https://s3-us-west-1.amazonaws.com/udacity-dlnfd/datasets/celeba.zip
     unzip celeba.zip -d celeba
