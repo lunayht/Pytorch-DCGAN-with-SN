@@ -1,19 +1,15 @@
 # load packages
-import os
 import random
 import argparse
-import numpy as np
 
 import torch
 import torch.nn as nn
 import torch.nn.parallel
-import torch.backends.cudnn as cudnn
 import torch.optim as optim
 import torch.utils.data
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
-from torchvision.utils import make_grid
 
 from model import Generator, Discriminator, weights_init
 from fid_score import calculate_fid_given_paths
@@ -61,7 +57,7 @@ def save_image_list(dataset, real):
 
     dataset_path = []
 
-    for i in range(len(dataset)):
+    for i, _ in enumerate(dataset):
         save_path = f"{base_path}/image_{i}.png"
         dataset_path.append(save_path)
         vutils.save_image(dataset[i], save_path, normalize=True)
